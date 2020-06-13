@@ -14,6 +14,7 @@ import com.wynntils.modules.music.MusicModule;
 import com.wynntils.modules.questbook.QuestBookModule;
 import com.wynntils.modules.richpresence.RichPresenceModule;
 import com.wynntils.modules.utilities.UtilitiesModule;
+import com.wynntils.modules.voice.VoiceModule;
 
 public class ModuleManager {
 
@@ -27,6 +28,7 @@ public class ModuleManager {
         FrameworkManager.registerModule(new RichPresenceModule());
         FrameworkManager.registerModule(new CosmeticsModule());
         FrameworkManager.registerModule(new MusicModule());
+        FrameworkManager.registerModule(new VoiceModule());
         FrameworkManager.registerModule(new ChatModule());
         FrameworkManager.registerModule(new MapModule());
     }
