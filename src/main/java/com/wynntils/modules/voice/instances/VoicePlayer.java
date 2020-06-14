@@ -1,6 +1,5 @@
 package com.wynntils.modules.voice.instances;
 
-import com.wynntils.Reference;
 import com.wynntils.modules.voice.configs.VoiceConfig;
 import javazoom.jl.player.JavaSoundAudioDevice;
 import javazoom.jl.player.advanced.AdvancedPlayer;
@@ -52,7 +51,6 @@ public class VoicePlayer {
             JavaSoundAudioDevice dv = (JavaSoundAudioDevice) currentPlayer.getAudioDevice();
             dv.setLineGain(volume);
             currentVolume = volume;
-            Reference.LOGGER.info("setCurrentValue to " + getCurrentVolume());
         }
     }
 

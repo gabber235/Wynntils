@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.wynntils.ModCore;
-import com.wynntils.Reference;
 import com.wynntils.modules.voice.configs.VoiceConfig;
 import com.wynntils.modules.voice.instances.VoicePlayer;
 
@@ -32,26 +31,29 @@ public class VoiceManager {
         return player;
     }
 
-    public static void filterChatMessage(String message) {
-        if (!message.matches(dialogueChatFilter.pattern())) return;
-        Reference.LOGGER.info("Got message: " + message);
-        playLine(message.replace(ModCore.mc().getSession().getUsername(), "You"));
+    public static String formatChatMessage(String message) {
+        if (!message.matches(dialogueChatFilter.pattern())) return null;
+        return message.replace(ModCore.mc().getSession().getUsername(), "You");
+    }
+
+    public static boolean playLine(String line) {
+        if (!VoiceConfig.INSTANCE.allowVoiceModule) return false;
+        try {
+            String url = cachedLines.get(line);
+            if (url.equals("")) return false;
+            player.play(url);
+            return true;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void likeLine(String line) {
+
     }
 
     public static void stop() {
         player.stop();
-    }
-
-    private static void playLine(String line) {
-        if (!VoiceConfig.INSTANCE.allowVoiceModule) return;
-        executor.execute(() -> {
-            try {
-                String url = cachedLines.get(line);
-                if (url.equals("")) return;
-                player.play(url);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

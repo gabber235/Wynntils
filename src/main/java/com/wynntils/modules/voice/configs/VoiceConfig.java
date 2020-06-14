@@ -13,6 +13,9 @@ public class VoiceConfig extends SettingsClass {
     @Setting(displayName = "Voice Over", description = "Should voice-overs be played when a npc talks?", order = 0)
     public boolean allowVoiceModule = false;
 
+    @Setting(displayName = "Voice Interaction", description = "Should lines have a report and like button appended?", order = 1)
+    public boolean addVoiceInteraction = true;
+
     @Setting(displayName = "Base Volume", description = "How loud should all soundtracks be?")
     @Setting.Limitations.FloatLimit(max = 1f, min = -50f, precision = 1f)
     public float baseVolume = 1;
@@ -23,6 +26,6 @@ public class VoiceConfig extends SettingsClass {
 
     @Override
     public void onSettingChanged(String name) {
-        if (!allowVoiceModule && Reference.onWorld) VoiceManager.stop();
+        if (!this.allowVoiceModule && Reference.onWorld) VoiceManager.stop();
     }
 }
