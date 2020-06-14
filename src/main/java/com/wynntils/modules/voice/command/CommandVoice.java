@@ -35,6 +35,7 @@ public class CommandVoice extends CommandBase implements IClientCommand {
 
         if (line == null) return;
         if (args[0].equals("report")) {
+            VoiceManager.reportLine(line);
             TextComponentString text = new TextComponentString("Successfully reported the voice line. Thanks for your feedback!");
             text.getStyle().setColor(TextFormatting.GOLD);
             sender.sendMessage(text);

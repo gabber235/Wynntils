@@ -30,16 +30,17 @@ public class ClientEvents implements Listener {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void chat(ChatEvent.Pre e) {
         if (!VoiceConfig.INSTANCE.allowVoiceModule) return;
-        String message = VoiceManager.formatChatMessage(e.getMessage().getUnformattedText());
+        ITextComponent rawMessage = e.getMessage();
+        String message = VoiceManager.formatChatMessage(rawMessage.getUnformattedText());
         if (message == null) return;
-        Supplier<ITextComponent> formattedMessage = !VoiceConfig.INSTANCE.addVoiceInteraction ? null : () -> e.getMessage().createCopy()
+        Supplier<ITextComponent> formattedMessage = VoiceConfig.INSTANCE.addVoiceInteraction ? () -> rawMessage.createCopy()
                 .appendSibling(getAppendableText("!", "Report this voice line!", TextFormatting.GOLD,
                         "/voice report " + message))
                 .appendSibling(getAppendableText("❤", "Like this voice line!", TextFormatting.BLUE,
-                        "/voice like " + message));
-        VoiceManager.playLine(message, e.getMessage(), formattedMessage);
+                        "/voice like " + message)) : null;
+        VoiceManager.playLine(message, rawMessage, formattedMessage);
 
-        e.setChatLineId(e.getMessage().getUnformattedText().hashCode());
+        e.setChatLineId(rawMessage.getUnformattedText().hashCode());
     }
 
     private ITextComponent getAppendableText(String text, String hover, TextFormatting color, String command) {

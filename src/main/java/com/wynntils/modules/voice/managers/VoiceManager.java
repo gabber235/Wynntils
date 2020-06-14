@@ -93,6 +93,10 @@ public class VoiceManager {
         });
     }
 
+    public static void reportLine(String line) {
+
+    }
+
     public static void likeLine(String line) {
 
     }
