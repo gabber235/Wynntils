@@ -1,5 +1,6 @@
 package com.wynntils.modules.voice.events;
 
+import com.wynntils.Reference;
 import com.wynntils.core.events.custom.ChatEvent;
 import com.wynntils.core.events.custom.WynnClassChangeEvent;
 import com.wynntils.core.events.custom.WynncraftServerEvent;
@@ -10,11 +11,13 @@ import com.wynntils.modules.voice.managers.VoiceManager;
 import net.minecraft.util.text.*;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static net.minecraft.util.text.event.ClickEvent.Action.RUN_COMMAND;
 
@@ -24,19 +27,19 @@ public class ClientEvents implements Listener {
         if (e.getCurrentClass() == ClassType.NONE) VoiceManager.stop();
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void chat(ChatEvent.Pre e) {
         if (!VoiceConfig.INSTANCE.allowVoiceModule) return;
-        String message = e.getMessage().getUnformattedText();
-
-        message = VoiceManager.formatChatMessage(message);
+        String message = VoiceManager.formatChatMessage(e.getMessage().getUnformattedText());
         if (message == null) return;
-        if (!VoiceManager.playLine(message)) return;
-        if (!VoiceConfig.INSTANCE.addVoiceInteraction) return;
-        e.setMessage(e.getMessage()
-                .appendSibling(getAppendableText("!", "Report this voice line!", TextFormatting.GOLD, "/voice report " + message))
-                .appendSibling(getAppendableText("❤", "Like this voice line!", TextFormatting.BLUE, "/voice like " + message))
-        );
+        Supplier<ITextComponent> formattedMessage = !VoiceConfig.INSTANCE.addVoiceInteraction ? null : () -> e.getMessage().createCopy()
+                .appendSibling(getAppendableText("!", "Report this voice line!", TextFormatting.GOLD,
+                        "/voice report " + message))
+                .appendSibling(getAppendableText("❤", "Like this voice line!", TextFormatting.BLUE,
+                        "/voice like " + message));
+        VoiceManager.playLine(message, e.getMessage(), formattedMessage);
+
+        e.setChatLineId(e.getMessage().getUnformattedText().hashCode());
     }
 
     private ITextComponent getAppendableText(String text, String hover, TextFormatting color, String command) {
@@ -64,7 +67,7 @@ public class ClientEvents implements Listener {
 
     @SubscribeEvent
     public void tick(TickEvent.ClientTickEvent e) {
-        if (e.phase == TickEvent.Phase.START) return;
+        if (e.phase == TickEvent.Phase.START || !Reference.onWorld) return;
 
         VoiceManager.getPlayer().updateController();
     }
